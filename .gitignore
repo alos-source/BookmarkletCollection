@@ -1,0 +1,13 @@
+# Python-Cache
+__pycache__/
+
+# Node-Modules
+node_modules/
+
+# Temp Files
+*.tmp
+tmp/
+
+# System Files
+.DS_Store
+Thumbs.db

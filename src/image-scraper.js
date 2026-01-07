@@ -1,0 +1,52 @@
+// Description: Extracts image URLs from the current webpage and exports them as a JSON file.
+
+(function() {
+    const images = document.querySelectorAll('img');
+    const results = [];
+    const seen = new Set();
+
+    images.forEach((img) => {
+        /*  Suchen die bestmögliche Quelle (srcset bietet oft höhere Auflösung)*/
+        let src = img.currentSrc || img.src;
+        
+        /*  Falls srcset vorhanden ist, nehmen wir letzten (meist größten) Eintrag */
+        if (img.srcset) {
+            const srcsetArray = img.srcset.split(',').map(s => s.trim().split(' ')[0]);
+            src = srcsetArray[srcsetArray.length - 1];
+        }
+
+        /*  Filter: Keine Daten-URLs (Base64), nur http/https und keine Duplikate */
+        if (src && src.startsWith('http') && !seen.has(src)) {
+            /*  Ignorieren sehr kleiner Bilder (Icons/Pixel) */  
+            if (img.naturalWidth > 50 || img.naturalHeight > 50 || !img.complete) {
+                seen.add(src);
+                results.push({
+                    alt: img.alt || "Kein Titel",
+                    url: src,
+                    page_title: document.title,
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+    });
+
+    if (results.length === 0) {
+        alert("Keine Bilder gefunden. Scrolle eventuell nach unten (Lazy Loading)!");
+        return;
+    }
+
+    /*  Export als JSON-Datei */
+    const dataStr = JSON.stringify(results, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 16);
+    a.href = url;
+    a.download = `${timestamp}_images.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    alert(`${results.length} Bild-URLs wurden exportiert!`);
+})();

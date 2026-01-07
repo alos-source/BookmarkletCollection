@@ -1,0 +1,73 @@
+# my-bookmarklet-collection
+
+This repository contains a curated collection of small, self-contained JavaScript bookmarklets and helper scripts you can use directly from your browser's bookmarks bar. It's geared toward quick automation and utilities such as scraping images, generating QR codes, inverting page colors, and scanning specific sites.
+The collection can be found in the [[BOOKMARKLETS.md]].
+
+## Contents
+
+- `src/` — source files for the individual bookmarklets (human-friendly, modular JS).
+- `qr-scanner.js`, `qr-scanner.min.js` — a QR code scanner bookmarklet (built/minified).
+- `BOOKMARKLETS.md` — auto-generated file with installable bookmarklet links (drag to bookmarks bar).
+- `build.py` — build helper script to generate the `dist/` artifacts and `BOOKMARKLETS.md` entries.
+
+## Quick start — use a bookmarklet
+
+1. Open `BOOKMARKLETS.md` in this repository and find the bookmarklet you want.
+2. Drag the corresponding link (for example, "📦 Image Scraper") to your browser's bookmarks bar. Alternatively, right-click the link, copy its URL, and create a new bookmark manually with that URL.
+3. Visit a webpage and click the bookmarklet to run the script on the current page.
+
+Notes:
+- Some bookmarklets load external scripts (e.g. QR code library). On websites with strict Content Security Policy (CSP), loading such external scripts may be blocked and the bookmarklet will show an error.
+- Bookmarklets run in the context of the page — they have the same origin privileges as the page itself. Use them responsibly.
+
+## Developer guide — add or modify bookmarklets
+
+Contract:
+- Input: the current web page DOM and location.
+- Output: a side-effect (download file, popup UI, modified page) or no visible effect if nothing is found.
+- Error modes: CSP blocked loading external libs, no matches found (should gracefully alert or no-op).
+
+Project structure overview:
+- `src/` — keep human-readable, well-commented source bookmarklets here. Prefer small, single-purpose files.
+- `BOOKMARKLETS.md` — generated file with wrapped bookmarklet URIs that users can drag into their bookmarks bar.
+- `build.py` — responsible for combining/minifying (using jsmin) source files, producing `dist/` artifacts, and regenerating `BOOKMARKLETS.md`.
+
+How to add a new bookmarklet:
+1. Create a new file in `src/`, e.g. `src/my-new-bookmarklet.js`.
+   - Keep it self-contained. If you need an external library, load it dynamically and detect CSP failures.
+   - Keep the output user-friendly: download files should use a readable timestamped filename; UI overlays should include a close button.
+2. Run the build script to generate the bookmarklet link and minified artifact:
+
+```powershell
+python build.py
+```
+
+3. Verify BOOKMARKLETS.md contains the new entry and try dragging the link into your bookmarks bar.
+
+## Development tips and edge cases:
+Empty pages: detect when there are no targets and show an informative alert.
+Large pages: avoid collecting huge in-memory arrays; stream or limit results for downloads if necessary.
+CSP: detect script load failures and surface a clear message explaining that CSP prevented execution.
+
+## Running and testing locally
+No web server is required to use bookmarklets. To preview/test, open a page (e.g., a local static HTML file) in Chrome/Edge/Firefox and click the bookmarklet.
+Use a temporary local HTML file with sample elements when developing (images, links, forms).
+Optional: run the build script to regenerate BOOKMARKLETS.md and dist/:
+
+## Contributing
+Keep bookmarklets small, documented, and idempotent when possible.
+Add tests by providing example pages (small HTML files) and a short manual test checklist. Automating browser tests is possible with Playwright or Puppeteer but out of scope for this repository.
+When changing a bookmarklet API (for example, how it serializes a download), add a note in the file header.
+
+## License
+MIT
+
+## References
+- [bookmarklet in Wiki](http://en.wikipedia.org/wiki/Bookmarklet)
+- https://web.archive.org/web/20080108234105/http://www.heise.de/ct/99/10/114/default.shtml
+- https://www.heise.de/hintergrund/So-nutzen-Sie-Bookmarklets-zum-Automatisieren-im-Browser-11081590.html
+- [https://jn64.github.io/bookmarklets/](https://jn64.github.io/bookmarklets/) / https://github.com/jn64/bookmarklets
+- https://github.com/ThomasOrlita/awesome-bookmarklets
+- https://developer.mozilla.org/en-US/docs/Web/API/Window
+- Bookmarklets, [http://www.bookmarklets.com/](https://web.archive.org/web/20080108234105/http://www.bookmarklets.com/)
+- Bookmarkleter: You have JavaScript. You need a [bookmarklet](http://en.wikipedia.org/wiki/Bookmarklet). This does that. https://chriszarate.github.io/bookmarkleter/
