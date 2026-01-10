@@ -20,6 +20,7 @@ The bookmarklets are available for installation at this repo project page.
 Notes:
 - Some bookmarklets load external scripts (e.g. QR code library). On websites with strict Content Security Policy (CSP), loading such external scripts may be blocked and the bookmarklet will show an error.
 - Bookmarklets run in the context of the page — they have the same origin privileges as the page itself. Use them responsibly.
+- In the source scripts, I have added a single line comment in the first line ``// Description: ...`` which will not be part of the bookmarklet, but be used for the description text on the repo page.
 
 ## Developer guide — add or modify bookmarklets
 
@@ -29,7 +30,7 @@ Contract:
 - Error modes: CSP blocked loading external libs, no matches found (should gracefully alert or no-op).
 
 Project structure overview:
-- `src/` — keep human-readable, well-commented source bookmarklets here. Prefer small, single-purpose files.
+- `src/` — keep human-readable, well-commented source bookmarklets here. Prefer small, single-purpose files. Only location where manual changes should be conducted.
 - `BOOKMARKLETS.md` — generated file with wrapped bookmarklet URIs that users can drag into their bookmarks bar.
 - `build.py` — responsible for combining/minifying (using jsmin) source files, producing `dist/` artifacts, and regenerating `BOOKMARKLETS.md`.
 
